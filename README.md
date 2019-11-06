@@ -1,45 +1,39 @@
-# datastax-example-template
-A short few sentences describing what is the purpose of the example and what the user will learn
+# Inserting and retrieving Blobs in Java
+This demonstrates how to handle inserting and retrieving blob data type columns in Java
 
-e.g.
-This application shows how to use configure your NodeJs application to connect to DDAC/Cassandra/DSE or an Apollo database at runtime.
-
-Contributors: A listing of contributors to this repository linked to their github profile
+Contributors: [Olivier Michallat](https://github.com/olim7t) and [Tomasz Lelek](https://github.com/tomekl007) derived from [here](https://github.com/datastax/java-driver/blob/4.x/examples/src/main/java/com/datastax/oss/driver/examples/datatypes/Blobs.java)
 
 ## Objectives
-A list of the top objectives that are being demonstrated by this sample
 
-e.g.
-* To demonstrate how to specify at runtime between a standard (DSE/DDAC/C*) client configuration and an Apollo configuration for the same application.
+* To demonstrate how to insert and retrieve blob data type columns from a Java application.
   
 ## Project Layout
-A list of key files within this repo and a short 1-2 sentence description of why they are important to the project
 
-e.g.
-* app.js - The main application file which contains all the logic to switch between the configurations
+* App.java - The main application file 
 
 ## How this Sample Works
-A description of how this sample works and how it demonstrates the objectives outlined above
-
+By default, the Java driver maps this type to {@link java.nio.ByteBuffer}. The ByteBuffer API
+ * is a bit tricky to use at times, so we will show common pitfalls as well. We strongly recommend
+ * that you read the {@link java.nio.Buffer} and {@link ByteBuffer} API docs and become familiar
+ * with the capacity, limit and position properties.  [This tutorial](http://tutorials.jenkov.com/java-nio/buffers.html) might also help
+ 
 ## Setup and Running
 
 ### Prerequisites
-The prerequisites required for this application to run
 
-e.g.
-* NodeJs version 8
-* A DSE 6.7 Cluster
-* Schema added to the cluster
+* Java 8
+* An Apache Cassandra(R) cluster is running and accessible through the contacts points and data center identified in [application.conf](/src/main/resources/application.conf)
 
 ### Running
-The steps and configuration needed to run and build this application
 
 e.g.
 To run this application use the following command:
 
-`node app.js`
+`mvn exec:java -Dexec.mainClass="com.datastax.examples.App"`
 
 This will produce the following output:
 
-`Connected to cluster with 3 host(s) ["XX.XX.XX.136:9042","XX.XX.XX.137:9042","XX.XX.XX.138:9042"]`
+`
+Writing retrieved buffer to /var/folders/v5/f93lqcsx2fj4__41f7l5w5j80000gn/T/blob6758286736353817789.png
+`
 
