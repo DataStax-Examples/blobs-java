@@ -9,7 +9,7 @@ Contributor(s): [Olivier Michallat](https://github.com/olim7t), [Tomasz Lelek](h
   
 ## Project Layout
 
-* [App.java](App.java) - The main application file 
+* [App.java](/src/main/java/com/datastax/examples/App.java) - The main application file 
 
 ## How this Sample Works
 By default, the Java DataStax Driver maps blob types to [java.nio.ByteBuffer](https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html). The ByteBuffer API is a bit tricky to use at times, so we will show common pitfalls as well. We strongly recommend that you read the [java.nio.Buffer](https://docs.oracle.com/javase/8/docs/api/java/nio/Buffer.html) and [ByteBuffer](https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html) API docs and become familiar with the capacity, limit and position properties. This [tutorial](http://tutorials.jenkov.com/java-nio/buffers.html) is also useful.
