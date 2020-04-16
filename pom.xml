@@ -8,6 +8,10 @@
     <artifactId>storing-and-retrieving-blobs</artifactId>
     <version>1.0</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.datastax.oss</groupId>
@@ -51,7 +55,7 @@
                             <mainClass>com.datastax.examples.BlobsApp</mainClass>
                         </manifest>
                     </archive>
-                    <finalName>${artifactId}-${version}</finalName>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
