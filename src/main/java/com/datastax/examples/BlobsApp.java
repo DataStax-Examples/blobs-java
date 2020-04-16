@@ -20,15 +20,21 @@ import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.data.ByteUtils;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static java.nio.file.StandardOpenOption.WRITE;
 
 /**
  * Inserts and retrieves values in BLOB columns.
@@ -56,14 +62,22 @@ import java.util.Objects;
  *   <li>inserts data in the table.
  * </ul>
  */
-public class App {
+public class BlobsApp {
 
-    private static File FILE = new File(App.class.getResource("/cassandra_logo.png").getFile());
+    private static final Path FILE;
+
+    static {
+        try {
+            URI uri = Thread.currentThread().getContextClassLoader().getResource("cassandra_logo.png").toURI();
+            FileSystems.newFileSystem(uri, Map.of("create", "true"));
+            FILE = Paths.get(uri);
+        } catch (NullPointerException | URISyntaxException | IOException e) {
+            throw new RuntimeException("Unable to load blob file from classpath.", e);
+        }
+    }
 
     public static void main(String[] args) throws IOException {
-
         try (CqlSession session = CqlSession.builder().build()) {
-
             createSchema(session);
             allocateAndInsert(session);
             retrieveSimpleColumn(session);
@@ -98,7 +112,7 @@ public class App {
         // Now position is back to the beginning, so the driver will see all 16 bytes.
         assert buffer.limit() - buffer.position() == 16;
 
-        Map<String, ByteBuffer> map = new HashMap<String, ByteBuffer>();
+        Map<String, ByteBuffer> map = new HashMap<>();
         map.put("test", buffer);
 
         PreparedStatement prepared =
@@ -225,8 +239,8 @@ public class App {
         PreparedStatement prepared = session.prepare("INSERT INTO examples.blobs (k, b) VALUES (1, ?)");
         session.execute(prepared.bind(buffer));
 
-        File tmpFile = File.createTempFile("blob", ".png");
-        System.out.printf("Writing retrieved buffer to %s%n", tmpFile.getAbsoluteFile());
+        Path tmpFile = Files.createTempFile("blob", ".png");
+        System.out.printf("Writing retrieved buffer to %s%n", tmpFile.toAbsolutePath());
 
         Row row = session.execute("SELECT b FROM examples.blobs WHERE k = 1").one();
         assert row != null;
@@ -234,12 +248,10 @@ public class App {
     }
 
     // Note:
-    // - This can be improved by using new-io
     // - this reads the whole file in memory in one go. If your file does not fit in memory you should
     // probably not insert it into Cassandra either ;)
-    private static ByteBuffer readAll(File file) throws IOException {
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            FileChannel channel = inputStream.getChannel();
+    private static ByteBuffer readAll(Path path) throws IOException {
+        try (FileChannel channel = FileChannel.open(path)) {
             ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
             channel.read(buffer);
             buffer.flip();
@@ -247,9 +259,8 @@ public class App {
         }
     }
 
-    private static void writeAll(ByteBuffer buffer, File file) throws IOException {
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            FileChannel channel = outputStream.getChannel();
+    private static void writeAll(ByteBuffer buffer, Path path) throws IOException {
+        try (FileChannel channel = FileChannel.open(path, WRITE)) {
             channel.write(buffer);
         }
     }
