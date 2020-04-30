@@ -10,13 +10,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <datastax-driver.version>4.6.0</datastax-driver.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.datastax.oss</groupId>
             <artifactId>java-driver-core</artifactId>
-            <version>4.5.1</version>
+            <version>${datastax-driver.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
